@@ -1,27 +1,23 @@
-name: Next JS Build with Caching & Artifacts
-
-on:
-  push:
-    branches: [ main ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node JS
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
-          cache: npm
+          cache: 'npm'
+        # run/build steps below will execute in the subdirectory:
+      
+      - name: Install dependencies
+        working-directory: ./angular-app
+        run: npm ci --prefer-offline --no-audit --progress=false
 
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Next JS App
+      - name: Build app
+        working-directory: ./angular-app
         run: npm run build
 
       - name: Upload Build as Artifacts
@@ -29,5 +25,5 @@ jobs:
         with:
           name: nextjs-build
           path: |
-            .next
-            public
+            angular-app/.next
+            angular-app/public
